@@ -1,4 +1,6 @@
-# **Supermarket Profit Calculator (SMT)**  
+# Legends of the Game's Supermarket Together Calculator (SMC)
+SMC — The Community's Profit Calculator for *Supermarket Together*
+
 A direct, transparent tool for determining final price and profit based on cost, markup, and rounding.  
 It performs its function without embellishment and without unnecessary complexity.  
 Its purpose is singular: present the numbers exactly as they are.
@@ -84,7 +86,15 @@ Functional.
 Ready for use.
 
 ## Recent Change Log
-All notable changes to the Supermarket Together Profit Calculator will be documented in this file. 
+Recent changes to the SMC will be documented in this file. 
+
+[1.1.5]
+- Project rebranded from *Supermarket Together Profit Calculator* to  
+  *Legends of the Game's Supermarket Together Calculator (SMC)*
+- Added mobile onboarding modal
+- Polished desktop header layout
+- Floating box stabilized
+- Mobile layout polish deferred to v1.2
 
 [1.1.0] - 2026-01-26
 Added
