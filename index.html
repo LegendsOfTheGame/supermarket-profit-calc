@@ -2,41 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Legends of the Game's Supermarket Together Easy Profit Calculator</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* V1.1.5 FINAL POLISH - Viewport-Safe Mobile Modal */
+    #mobileBackdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.75);
+      z-index: 9998;
+    }
+
+    #mobileNotice {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #1a1a1a;
+      color: #ffd700;
+      padding: 24px;
+      border-radius: 12px;
+      z-index: 9999;
+      width: 90%;
+      max-width: 360px;
+      /* Prevent overflow on small devices like iPhone SE */
+      max-height: 90vh;
+      overflow-y: auto;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      border: 1px solid #333;
+    }
+
+    .notice-header { font-size: 1.3em; font-weight: 700; margin-bottom: 8px; display: block; }
+    .notice-body { font-size: 1em; color: #ddd; margin-bottom: 20px; line-height: 1.4; display: block; }
+
+    .mobile-btn-group { display: flex; flex-direction: column; gap: 10px; }
+    .mobile-btn { width: 100%; padding: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; font-size: 1em; }
+    .btn-share { background-color: #ffd700; color: #000; }
+    .btn-dismiss { background-color: #333; color: #ffd700; border: 1px solid #444; }
+
+    /* Floating box styles fixed for desktop and mobile */
+    .floating-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #222;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ffd700;
+      z-index: 1000;
+      min-width: 180px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .floating-buttons.minimized .buttons-content { display: none; }
+    .floating-buttons.minimized { padding: 5px; min-width: auto; }
+  </style>
 </head>
 <body>
-  <h1>Legends of the Game's Supermarket Together Easy Profit Calculator</h1> <!-- MIT -->
-
-<div id="controls">
-  <div class="control-row">
-    <label for="categorySelect">Choose a category:</label>
-    <select id="categorySelect">
-      <option>(No categories yet)</option>
-    </select>
-  </div>
-
-  <div class="control-row">
-    <span class="control-label">Select Profit Margin:</span>
-    <button class="profit-btn" data-profit="20">20%</button> <!-- MIT -->
-    <button class="profit-btn" data-profit="30">30%</button> <!-- MIT -->
-    <button class="profit-btn" data-profit="40">40%</button> <!-- MIT -->
-    <button class="profit-btn" data-profit="50">50%</button> <!-- MIT -->
-    <input id="customProfit" type="number" placeholder="Custom %" step="0.1">
-    <button id="resetBtn" class="reset-btn">Reset All</button>
-  </div>
-
-  <div id="profitWarning" style="display:none;">⚠ Max profit is 99.9%</div>
+<div style="margin-bottom: 16px;">
+  <h1 style="margin: 0 0 4px 0; font-size: 1.8em; text-align: center; background: none;">
+    Legends of the Game's Supermarket Together Calculator (SMC)
+  </h1>
+  <h5 style="margin: 0; color: #ccc; text-align: right; background: none;">
+    SMC — The Community's Profit Calculator for Supermarket Together
+  </h5>
 </div>
-<div id="showingStatus"></div>
-  <table> <!-- // MIT for this whole table -->
+
+
+
+  <div id="controls">
+    <div class="control-row">
+      <label for="categorySelect">Choose a category:</label>
+      <select id="categorySelect">
+        <option>(No categories yet)</option>
+      </select>
+    </div>
+
+    <div class="control-row">
+      <span class="control-label">Select Profit Margin:</span>
+      <button class="profit-btn" data-profit="20">20%</button>
+      <button class="profit-btn" data-profit="30">30%</button>
+      <button class="profit-btn" data-profit="40">40%</button>
+      <button class="profit-btn" data-profit="50">50%</button>
+      <input id="customProfit" type="number" placeholder="Custom %" step="0.1">
+      <button id="resetBtn" class="reset-btn">Reset All</button>
+    </div>
+    <div id="profitWarning" style="display:none;">⚠ Max profit is 99.9%</div>
+  </div>
+
+  <div id="showingStatus"></div>
+
+  <table>
     <thead>
       <tr>
         <th>Image</th>
         <th>Product</th>
         <th>Cost ($)</th>
         <th>Profit (%)</th>
-        <th>Sale Price ($)<span title="Rounded to the nearest $0.05 (Canadian cash rounding policy see README on GitHub; U.S. may adopt similar policy)"> ℹ️ </span></th>
+        <th>Sale Price ($)<span title="Rounded to the nearest $0.05"> ℹ️ </span></th>
         <th>Profit ($)</th>
       </tr>
     </thead>
@@ -44,31 +130,65 @@
   </table>
 
   <script src="js/app.js"></script>
-  <div id="floating-box" class="floating-buttons">
-  <button id="toggle-btn" class="close-btn">✖</button>
-  <div class="buttons-content">
-    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc/issues/new" target="_blank">🐞 Report a Bug</a> <!-- MIT (Modified with LoTG url)-->
-    <a href="https://store.steampowered.com/app/2709570/Supermarket_Together/?utm_source=profitcalc" target="_blank">🛒 Play on Steam</a>  <!-- MIT -->
-    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc" target="_blank">⭐ Star on GitHub</a> <!-- MIT (Modified with LoTG url)-->
-    <a href="https://ko-fi.com/haven_reborn" target="_blank">☕ Donate on Ko‑Fi</a>
-    <a href="https://buymeacoffee.com/hammerstreetclean" target="_blank">🍵 Support on Buy Me a Coffee</a>
-  </div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("toggle-btn");
-  const floatingBox = document.getElementById("floating-box");
 
-  toggleBtn.addEventListener("click", () => {
-    floatingBox.classList.toggle("minimized");
-    // Change button text depending on state
-    if (floatingBox.classList.contains("minimized")) {
-      toggleBtn.textContent = "➕"; // expand icon
-    } else {
-      toggleBtn.textContent = "✖"; // close icon
+  <div id="mobileBackdrop"></div>
+  <div id="mobileNotice">
+    <span class="notice-header">Mobile Layout in Progress</span>
+    <span class="notice-body">For the best experience while we build our mobile site, please use a desktop browser.</span>
+    <div class="mobile-btn-group">
+      <button class="mobile-btn btn-share" onclick="shareSMC()">Share link to desktop</button>
+      <button class="mobile-btn btn-dismiss" onclick="dismissNotice()">Continue anyway</button>
+    </div>
+  </div>
+
+  <div id="floating-box" class="floating-buttons">
+    <button id="toggle-btn" class="close-btn">✖</button>
+    <div class="buttons-content">
+      <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc/issues/new" target="_blank">🐞 Report a Bug</a>
+      <a href="https://store.steampowered.com/app/2709570/Supermarket_Together/?utm_source=profitcalc" target="_blank">🛒 Play on Steam</a>
+      <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc" target="_blank">⭐ Star on GitHub</a>
+      <a href="https://ko-fi.com/haven_reborn" target="_blank">☕ Donate on Ko‑Fi</a>
+      <a href="https://buymeacoffee.com/hammerstreetclean" target="_blank">🍵 Support on Buy Me a Coffee</a>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("toggle-btn");
+    const floatingBox = document.getElementById("floating-box");
+
+    toggleBtn.addEventListener("click", () => {
+      floatingBox.classList.toggle("minimized");
+      toggleBtn.textContent = floatingBox.classList.contains("minimized") ? "➕" : "✖";
+    });
+
+    function checkMobile() {
+      if (window.innerWidth < 1100 && !sessionStorage.getItem('mobileNoticeDismissed')) {
+        document.getElementById('mobileBackdrop').style.display = 'block';
+        document.getElementById('mobileNotice').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
     }
+
+    window.dismissNotice = function() {
+      document.getElementById('mobileBackdrop').style.display = 'none';
+      document.getElementById('mobileNotice').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      sessionStorage.setItem('mobileNoticeDismissed', 'true');
+    };
+
+    window.shareSMC = function() {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: 'SMC Calculator', url: url });
+      } else {
+        navigator.clipboard.writeText(url);
+        alert('Link copied to clipboard!');
+      }
+    };
+
+    checkMobile();
   });
-});
-</script>
+  </script>
 </body>
 </html>
