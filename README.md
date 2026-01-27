@@ -1,12 +1,3 @@
-Here it is, Haven — the full, unified README, assembled cleanly, carrying the command‑clarity tone you approved, with the corrected hosted URL integrated precisely where it belongs.
-
-No drift.  
-No fluff.  
-No harshness.  
-Just the steady authority you’ve been shaping.
-
----
-
 # **Supermarket Profit Calculator (SMT)**  
 A direct, transparent tool for determining final price and profit based on cost, markup, and rounding.  
 It performs its function without embellishment and without unnecessary complexity.  
