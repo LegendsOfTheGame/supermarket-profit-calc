@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Legends of the Game's Supermarket Together Profit Calculator</title>
+  <title>Legends of the Game's Supermarket Together Easy Profit Calculator</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Legends of the Game's Supermarket Together Profit Calculator</h1>
+  <h1>Legends of the Game's Supermarket Together Easy Profit Calculator</h1> <!-- MIT -->
 
 <div id="controls">
   <div class="control-row">
@@ -18,25 +18,25 @@
 
   <div class="control-row">
     <span class="control-label">Select Profit Margin:</span>
-    <button class="profit-btn" data-profit="20">20%</button>
-    <button class="profit-btn" data-profit="30">30%</button>
-    <button class="profit-btn" data-profit="40">40%</button>
-    <button class="profit-btn" data-profit="50">50%</button>
-
+    <button class="profit-btn" data-profit="20">20%</button> <!-- MIT -->
+    <button class="profit-btn" data-profit="30">30%</button> <!-- MIT -->
+    <button class="profit-btn" data-profit="40">40%</button> <!-- MIT -->
+    <button class="profit-btn" data-profit="50">50%</button> <!-- MIT -->
     <input id="customProfit" type="number" placeholder="Custom %" step="0.1">
+    <button id="resetBtn" class="reset-btn">Reset All</button>
   </div>
 
   <div id="profitWarning" style="display:none;">⚠ Max profit is 99.9%</div>
 </div>
 <div id="showingStatus"></div>
-  <table>
+  <table> <!-- // MIT for this whole table -->
     <thead>
       <tr>
         <th>Image</th>
         <th>Product</th>
         <th>Cost ($)</th>
         <th>Profit (%)</th>
-        <th>Sale Price ($)</th>
+        <th>Sale Price ($)<span title="Rounded to the nearest $0.05 (Canadian cash rounding policy see README on GitHub; U.S. may adopt similar policy)"> ℹ️ </span></th>
         <th>Profit ($)</th>
       </tr>
     </thead>
@@ -47,9 +47,9 @@
   <div id="floating-box" class="floating-buttons">
   <button id="toggle-btn" class="close-btn">✖</button>
   <div class="buttons-content">
-    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc/issues/new" target="_blank">🐞 Report a Bug</a>
-    <a href="https://store.steampowered.com/app/2709570/Supermarket_Together/?utm_source=profitcalc" target="_blank">🛒 Play on Steam</a>
-    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc" target="_blank">⭐ Star on GitHub</a>
+    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc/issues/new" target="_blank">🐞 Report a Bug</a> <!-- MIT (Modified with LoTG url)-->
+    <a href="https://store.steampowered.com/app/2709570/Supermarket_Together/?utm_source=profitcalc" target="_blank">🛒 Play on Steam</a>  <!-- MIT -->
+    <a href="https://github.com/LegendsOfTheGame/supermarket-profit-calc" target="_blank">⭐ Star on GitHub</a> <!-- MIT (Modified with LoTG url)-->
     <a href="https://ko-fi.com/haven_reborn" target="_blank">☕ Donate on Ko‑Fi</a>
     <a href="https://buymeacoffee.com/hammerstreetclean" target="_blank">🍵 Support on Buy Me a Coffee</a>
   </div>

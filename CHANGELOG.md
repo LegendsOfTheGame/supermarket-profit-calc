@@ -1,0 +1,31 @@
+## Entire Changelog
+All notable changes to the Supermarket Together Profit Calculator will be documented in this file. 
+
+[1.1.0] - 2026-01-26
+Added
+Precision Nickel-Rounding: Implemented a new calculation engine that snaps all sale prices to the nearest $0.05, ensuring 100% accuracy with in-game cash register behavior.
+
+Dynamic Cost Adjustment: Introduced interactive cost input fields, allowing users to modify product costs on the fly to account for in-game inflation without reloading the page.
+
+State Persistence: Refactored the internal logic so that selected profit margins and custom inputs are preserved when switching between categories.
+
+Fixed
+Rounding Drift: Resolved an issue where profit was calculated based on raw percentages rather than the final rounded sale price.
+
+Rendering Efficiency: Optimized table updates to refresh only modified rows rather than re-rendering the entire dataset.
+
+[1.0.0] - 2026-01-25
+Groundbreaking Changes
+The Great Refactor: Deconstructed the 975-line monolithic legacy file into a modern, modular architecture with separate assets for Logic (JS), Style (CSS), and Data (JSON).
+
+Framework Liberation: Stripped out heavy external dependencies, including Bootstrap 5 and SheetJS, resulting in a 90% reduction in external requests and significantly faster load times.
+
+Legends Branding & UI: Replaced the legacy light-mode design with a custom-built, high-contrast Dark Mode and introduced a smart category filter system to replace the "Wall of Products" scroll.
+
+[0.32.0] - 2025-08-04
+Legacy Milestone
+Final Monolith Version: The culmination of the original 32-commit effort.
+
+Baseline Data: Contained the original hardcoded product list and pricing logic.
+
+Standard Logic: Used basic toFixed(2) math and standard Bootstrap table layouts.

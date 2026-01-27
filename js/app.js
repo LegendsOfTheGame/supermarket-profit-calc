@@ -1,4 +1,18 @@
 // ===============================
+// GLOBAL STATE
+// ===============================
+let productsData = [];
+let selectedCategory = "Show All";
+let selectedProfit = null;
+
+// ===============================
+// ROUNDING FUNCTION (nearest nickel)
+// ===============================
+function roundToNickel(amount) {
+  return Math.round(amount / 0.05) * 0.05;
+}
+
+// ===============================
 // RENDER TABLE
 // ===============================
 function renderTable(products, profitPercent = null) {
@@ -6,26 +20,38 @@ function renderTable(products, profitPercent = null) {
   tbody.innerHTML = "";
 
   products.forEach(product => {
-    const profit = profitPercent ? product.cost * (profitPercent / 100) : null;
-    const salePrice = profitPercent ? product.cost + profit : null;
+    let profit = null;
+    let salePrice = null;
+
+    if (profitPercent !== null) {
+      const rawSalePrice = product.cost * (1 + profitPercent / 100);
+      salePrice = roundToNickel(rawSalePrice);
+      profit = salePrice - product.cost;
+    }
 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>
         <img src="assets/images/${product.image}" 
              alt="${product.name}" width="60"
+             loading="lazy"
              onerror="this.src='https://via.placeholder.com/60?text=No+Image';">
       </td>
       <td><strong>${product.name}</strong></td>
-      <td>$${product.cost.toFixed(2)}</td>
-      <td>${profitPercent ? profitPercent + "%" : "—"}</td>
-      <td>${salePrice ? "$" + salePrice.toFixed(2) : "—"}</td>
-      <td>${profit ? "$" + profit.toFixed(2) : "—"}</td>
+      <td>
+        <input type="number" 
+               value="${product.cost.toFixed(2)}" 
+               step="0.01" 
+               class="cost-input" 
+               data-product="${product.name}">
+      </td>
+      <td>${profitPercent !== null ? profitPercent.toFixed(1) + "%" : "—"}</td>
+      <td>${salePrice !== null ? "$" + salePrice.toFixed(2) : "—"}</td>
+      <td>${profit !== null ? "$" + profit.toFixed(2) : "—"}</td>
     `;
     tbody.appendChild(row);
   });
 }
-
 
 // ===============================
 // LOAD CATEGORIES
@@ -39,12 +65,10 @@ function loadCategories(products) {
     categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
 }
 
-
 // ===============================
-// LOAD + RENDER
+// STATUS LINE
 // ===============================
-let productsData = [];
-function updateStatus(selectedCategory) {
+function updateStatus() {
   const statusDiv = document.getElementById("showingStatus");
   if (selectedCategory === "Show All") {
     statusDiv.textContent = "Showing: All Products";
@@ -53,48 +77,52 @@ function updateStatus(selectedCategory) {
   }
 }
 
-function loadAndRender(profitPercent = null) {
+// ===============================
+// REFRESH TABLE (uses both states)
+// ===============================
+function refreshTable() {
+  let filtered = selectedCategory === "Show All"
+    ? productsData
+    : productsData.filter(p => p.category === selectedCategory);
+
+  renderTable(filtered, selectedProfit);
+  updateStatus();
+}
+
+// ===============================
+// INITIAL LOAD
+// ===============================
+function loadProducts() {
   fetch("data/products.json")
     .then(res => res.json())
     .then(data => {
       productsData = data;
       loadCategories(data);
-
-      const selectedCategory = document.getElementById("categorySelect").value;
-      let filtered = selectedCategory === "Show All"
-        ? data
-        : data.filter(p => p.category === selectedCategory);
-
-      renderTable(filtered, profitPercent);
-      updateStatus(selectedCategory);
+      selectedProfit = 25;
+      refreshTable(); // default: Show All + no profit
     })
     .catch(err => console.error("Failed to load products.json:", err));
 }
 
-document.getElementById("categorySelect").addEventListener("change", () => {
-  const selectedCategory = document.getElementById("categorySelect").value;
-  let filtered = selectedCategory === "Show All"
-    ? productsData
-    : productsData.filter(p => p.category === selectedCategory);
+// ===============================
+// EVENT LISTENERS
+// ===============================
 
-  renderTable(filtered);
-  updateStatus(selectedCategory);
+// Category change
+document.getElementById("categorySelect").addEventListener("change", e => {
+  selectedCategory = e.target.value;
+  refreshTable();
 });
 
-
-// ===============================
-// PRESET PROFIT BUTTONS
-// ===============================
+// Profit buttons
 document.querySelectorAll(".profit-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    const percent = parseInt(btn.dataset.profit);
-    loadAndRender(percent);
+    selectedProfit = parseInt(btn.dataset.profit);
+    refreshTable();
   });
 });
 
-// ===============================
-// CUSTOM PROFIT INPUT
-// ===============================
+// Custom profit input
 const customProfitInput = document.getElementById("customProfit");
 const profitWarning = document.getElementById("profitWarning");
 
@@ -110,10 +138,59 @@ customProfitInput.addEventListener("input", () => {
     profitWarning.style.display = "none";
   }
 
-  loadAndRender(value);
+  selectedProfit = value;
+  refreshTable();
+});
+
+// Cost input updates (row-only)
+document.addEventListener("input", e => {
+  if (e.target.classList.contains("cost-input")) {
+    const productName = e.target.dataset.product;
+    const newCost = parseFloat(e.target.value);
+
+    const product = productsData.find(p => p.name === productName);
+    if (product && !isNaN(newCost)) {
+      product.cost = newCost;
+
+      // Update only this row
+      const row = e.target.closest("tr");
+      if (selectedProfit !== null) {
+        const rawSalePrice = product.cost * (1 + selectedProfit / 100);
+        const salePrice = roundToNickel(rawSalePrice);
+        const profit = salePrice - product.cost;
+
+        row.querySelector("td:nth-child(5)").textContent = "$" + salePrice.toFixed(2);
+        row.querySelector("td:nth-child(6)").textContent = "$" + profit.toFixed(2);
+      }
+    }
+  }
+});
+
+// Reset button listener
+document.getElementById("resetBtn").addEventListener("click", () => {
+  // Reload products.json to restore default costs
+  fetch("data/products.json")
+    .then(res => res.json())
+    .then(data => {
+      productsData = data;
+
+      // Reset state
+      selectedCategory = "Show All";
+      selectedProfit = 25;
+
+      // Reset dropdown to default
+      document.getElementById("categorySelect").value = "Show All";
+
+      // Reset custom profit input
+      document.getElementById("customProfit").value = "";
+
+      // Re-render table
+      refreshTable();
+    })
+    .catch(err => console.error("Failed to reload products.json:", err));
 });
 
 // ===============================
-// INITIAL LOAD
+// START
 // ===============================
-loadAndRender();
+loadProducts();
