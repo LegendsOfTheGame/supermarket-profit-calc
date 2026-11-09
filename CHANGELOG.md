@@ -1,6 +1,10 @@
 ## Entire Changelog
 All notable changes to the Supermarket Together Profit Calculator will be documented in this file. 
 
+[Unreleased]
+Changed
+- Improved table rendering and image loading to reduce startup and update costs.
+
 [1.1.5] - 2026-01-27
 Added
 - Immersive mobile onboarding modal with backdrop blur and session-aware dismissal

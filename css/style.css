@@ -47,6 +47,10 @@ label {
   font-weight: 600;
   color: #ffcc00;
 }
+#productTableBody tr {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 76px;
+}
 .control-row {
   display: flex;
   align-items: center;
