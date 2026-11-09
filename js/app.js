@@ -6,13 +6,6 @@ let productsByName = new Map();
 let selectedCategory = "Show All";
 let selectedProfit = null;
 let renderedCategory = null;
-const startingLocationCategories = new Set([
-  "Produce I",
-  "Basic Products I",
-  "Cleaning Products I",
-  "Sweets and Snacks I",
-  "Soda Drinks I"
-]);
 
 // ===============================
 // ROUNDING FUNCTION (nearest nickel)
@@ -152,21 +145,6 @@ function loadProducts() {
 // Category change
 document.getElementById("categorySelect").addEventListener("change", e => {
   selectedCategory = e.target.value;
-  const startingLocationSelect = document.getElementById("startingLocationSelect");
-  startingLocationSelect.value = startingLocationCategories.has(selectedCategory)
-    ? selectedCategory
-    : "";
-  refreshTable();
-});
-
-// Starting location selection
-document.getElementById("startingLocationSelect").addEventListener("change", e => {
-  if (!e.target.value) {
-    selectedCategory = "Show All";
-  } else {
-    selectedCategory = e.target.value;
-  }
-  document.getElementById("categorySelect").value = selectedCategory;
   refreshTable();
 });
 
@@ -227,7 +205,6 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 
       // Reset dropdown to default
       document.getElementById("categorySelect").value = "Show All";
-      document.getElementById("startingLocationSelect").value = "";
 
       // Reset custom profit input
       document.getElementById("customProfit").value = "";

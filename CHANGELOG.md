@@ -4,7 +4,6 @@ All notable changes to the Supermarket Together Profit Calculator will be docume
 [Unreleased]
 Changed
 - Improved table rendering and image loading to reduce startup and update costs.
-- Added starting-location shortcuts for Produce I, Basic Products I, Cleaning Products I, Sweets and Snacks I, and Soda Drinks I.
 
 [1.1.5] - 2026-01-27
 Added
