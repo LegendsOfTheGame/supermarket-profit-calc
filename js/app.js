@@ -2,8 +2,10 @@
 // GLOBAL STATE
 // ===============================
 let productsData = [];
+let productsByName = new Map();
 let selectedCategory = "Show All";
 let selectedProfit = null;
+let renderedCategory = null;
 
 // ===============================
 // ROUNDING FUNCTION (nearest nickel)
@@ -15,41 +17,65 @@ function roundToNickel(amount) {
 // ===============================
 // RENDER TABLE
 // ===============================
-function renderTable(products, profitPercent = null) {
+function renderTable(products) {
   const tbody = document.getElementById("productTableBody");
-  tbody.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
   products.forEach(product => {
-    let profit = null;
-    let salePrice = null;
-
-    if (profitPercent !== null) {
-      const rawSalePrice = product.cost * (1 + profitPercent / 100);
-      salePrice = roundToNickel(rawSalePrice);
-      profit = salePrice - product.cost;
-    }
-
     const row = document.createElement("tr");
+    row.dataset.product = product.name;
     row.innerHTML = `
       <td>
-        <img src="assets/images/${product.image}" 
-             alt="${product.name}" width="60"
+        <img src="assets/images/${product.image}"
+             alt="${product.name}" width="60" height="60"
+             decoding="async"
              loading="lazy"
-             onerror="this.src='https://via.placeholder.com/60?text=No+Image';">
+             onerror="this.onerror=null;this.style.visibility='hidden'">
       </td>
       <td><strong>${product.name}</strong></td>
       <td>
-        <input type="number" 
-               value="${product.cost.toFixed(2)}" 
-               step="0.01" 
-               class="cost-input" 
+        <input type="number"
+               value="${product.cost.toFixed(2)}"
+               step="0.01"
+               class="cost-input"
                data-product="${product.name}">
       </td>
-      <td>${profitPercent !== null ? profitPercent.toFixed(1) + "%" : "—"}</td>
-      <td>${salePrice !== null ? "$" + salePrice.toFixed(2) : "—"}</td>
-      <td>${profit !== null ? "$" + profit.toFixed(2) : "—"}</td>
+      <td class="pct"></td>
+      <td class="sale"></td>
+      <td class="profit"></td>
     `;
-    tbody.appendChild(row);
+    fragment.appendChild(row);
+  });
+
+  tbody.replaceChildren(fragment);
+  updatePrices();
+}
+
+function updatePrices() {
+  const rows = document.querySelectorAll("#productTableBody tr");
+
+  rows.forEach(row => {
+    const product = productsByName.get(row.dataset.product);
+    if (!product) return;
+
+    const pctCell = row.querySelector(".pct");
+    const saleCell = row.querySelector(".sale");
+    const profitCell = row.querySelector(".profit");
+
+    if (selectedProfit === null) {
+      pctCell.textContent = "—";
+      saleCell.textContent = "—";
+      profitCell.textContent = "—";
+      return;
+    }
+
+    const rawSalePrice = product.cost * (1 + selectedProfit / 100);
+    const salePrice = roundToNickel(rawSalePrice);
+    const profit = salePrice - product.cost;
+
+    pctCell.textContent = selectedProfit.toFixed(1) + "%";
+    saleCell.textContent = "$" + salePrice.toFixed(2);
+    profitCell.textContent = "$" + profit.toFixed(2);
   });
 }
 
@@ -63,6 +89,8 @@ function loadCategories(products) {
   categorySelect.innerHTML =
     `<option value="Show All">Show All</option>` +
     categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
+  selectedCategory = categories[0] || "Show All";
+  categorySelect.value = selectedCategory;
 }
 
 // ===============================
@@ -80,12 +108,17 @@ function updateStatus() {
 // ===============================
 // REFRESH TABLE (uses both states)
 // ===============================
-function refreshTable() {
-  let filtered = selectedCategory === "Show All"
-    ? productsData
-    : productsData.filter(p => p.category === selectedCategory);
+function refreshTable(forceRender = false) {
+  if (forceRender || selectedCategory !== renderedCategory) {
+    const filtered = selectedCategory === "Show All"
+      ? productsData
+      : productsData.filter(p => p.category === selectedCategory);
 
-  renderTable(filtered, selectedProfit);
+    renderTable(filtered);
+    renderedCategory = selectedCategory;
+  } else {
+    updatePrices();
+  }
   updateStatus();
 }
 
@@ -97,9 +130,10 @@ function loadProducts() {
     .then(res => res.json())
     .then(data => {
       productsData = data;
+      productsByName = new Map(data.map(product => [product.name, product]));
       loadCategories(data);
       selectedProfit = 25;
-      refreshTable(); // default: Show All + no profit
+      refreshTable();
     })
     .catch(err => console.error("Failed to load products.json:", err));
 }
@@ -148,20 +182,10 @@ document.addEventListener("input", e => {
     const productName = e.target.dataset.product;
     const newCost = parseFloat(e.target.value);
 
-    const product = productsData.find(p => p.name === productName);
+    const product = productsByName.get(productName);
     if (product && !isNaN(newCost)) {
       product.cost = newCost;
-
-      // Update only this row
-      const row = e.target.closest("tr");
-      if (selectedProfit !== null) {
-        const rawSalePrice = product.cost * (1 + selectedProfit / 100);
-        const salePrice = roundToNickel(rawSalePrice);
-        const profit = salePrice - product.cost;
-
-        row.querySelector("td:nth-child(5)").textContent = "$" + salePrice.toFixed(2);
-        row.querySelector("td:nth-child(6)").textContent = "$" + profit.toFixed(2);
-      }
+      updatePrices();
     }
   }
 });
@@ -173,6 +197,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
     .then(res => res.json())
     .then(data => {
       productsData = data;
+      productsByName = new Map(data.map(product => [product.name, product]));
 
       // Reset state
       selectedCategory = "Show All";
@@ -185,7 +210,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
       document.getElementById("customProfit").value = "";
 
       // Re-render table
-      refreshTable();
+      refreshTable(true);
     })
     .catch(err => console.error("Failed to reload products.json:", err));
 });
